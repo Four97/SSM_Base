@@ -1,8 +1,8 @@
 package com.four.controller;
 
 
-import com.four.bean.Employee;
-import com.four.bean.Msg;
+import com.four.domain.Employee;
+import com.four.domain.Msg;
 import com.four.service.EmployeeService;
 import com.github.pagehelper.PageHelper;
 import com.github.pagehelper.PageInfo;

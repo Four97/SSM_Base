@@ -12,7 +12,7 @@
     </settings>
 
     <typeAliases>
-        <package name="com.four.bean"/>
+        <package name="com.four.domain"/>
     </typeAliases>
 
     <plugins>

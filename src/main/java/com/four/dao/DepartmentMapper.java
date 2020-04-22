@@ -1,9 +1,10 @@
 package com.four.dao;
 
-import com.four.bean.Department;
-import com.four.bean.DepartmentExample;
-import java.util.List;
+import com.four.domain.Department;
+import com.four.domain.DepartmentExample;
 import org.apache.ibatis.annotations.Param;
+
+import java.util.List;
 
 public interface DepartmentMapper {
     long countByExample(DepartmentExample example);

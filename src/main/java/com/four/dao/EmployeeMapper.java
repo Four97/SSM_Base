@@ -1,7 +1,7 @@
 package com.four.dao;
 
-import com.four.bean.Employee;
-import com.four.bean.EmployeeExample;
+import com.four.domain.Employee;
+import com.four.domain.EmployeeExample;
 import org.apache.ibatis.annotations.Param;
 
 import java.util.List;

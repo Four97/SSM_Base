@@ -1,7 +1,7 @@
 package com.four.test;
 
 
-import com.four.bean.Employee;
+import com.four.domain.Employee;
 import com.github.pagehelper.PageInfo;
 import org.junit.Before;
 import org.junit.Test;

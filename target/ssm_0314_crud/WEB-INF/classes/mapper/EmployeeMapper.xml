@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.four.dao.EmployeeMapper">
-  <resultMap id="BaseResultMap" type="com.four.bean.Employee">
+  <resultMap id="BaseResultMap" type="com.four.domain.Employee">
     <id column="emp_id" jdbcType="INTEGER" property="empId" />
     <result column="emp_name" jdbcType="VARCHAR" property="empName" />
     <result column="gender" jdbcType="CHAR" property="gender" />
@@ -9,13 +9,13 @@
     <result column="d_id" jdbcType="INTEGER" property="dId" />
   </resultMap>
 
-  <resultMap id="WithDeptResultMap" type="com.four.bean.Employee">
+  <resultMap id="WithDeptResultMap" type="com.four.domain.Employee">
     <id column="emp_id" jdbcType="INTEGER" property="empId" />
     <result column="emp_name" jdbcType="VARCHAR" property="empName" />
     <result column="gender" jdbcType="CHAR" property="gender" />
     <result column="email" jdbcType="VARCHAR" property="email" />
     <result column="d_id" jdbcType="INTEGER" property="dId" />
-    <association property="department" javaType="com.four.bean.Department">
+    <association property="department" javaType="com.four.domain.Department">
       <id column="dept_id" property="deptId"/>
       <result column="dept_name" property="deptName"/>
     </association>
@@ -116,7 +116,7 @@
 
 
 
-  <select id="selectByExample" parameterType="com.four.bean.EmployeeExample" resultMap="BaseResultMap">
+  <select id="selectByExample" parameterType="com.four.domain.EmployeeExample" resultMap="BaseResultMap">
     select
     <if test="distinct">
       distinct
@@ -140,19 +140,19 @@
     delete from tbl_emp
     where emp_id = #{empId,jdbcType=INTEGER}
   </delete>
-  <delete id="deleteByExample" parameterType="com.four.bean.EmployeeExample">
+  <delete id="deleteByExample" parameterType="com.four.domain.EmployeeExample">
     delete from tbl_emp
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
     </if>
   </delete>
-  <insert id="insert" parameterType="com.four.bean.Employee">
+  <insert id="insert" parameterType="com.four.domain.Employee">
     insert into tbl_emp (emp_id, emp_name, gender, 
       email, d_id)
     values (#{empId,jdbcType=INTEGER}, #{empName,jdbcType=VARCHAR}, #{gender,jdbcType=CHAR}, 
       #{email,jdbcType=VARCHAR}, #{dId,jdbcType=INTEGER})
   </insert>
-  <insert id="insertSelective" parameterType="com.four.bean.Employee">
+  <insert id="insertSelective" parameterType="com.four.domain.Employee">
     insert into tbl_emp
     <trim prefix="(" suffix=")" suffixOverrides=",">
       <if test="empId != null">
@@ -189,7 +189,7 @@
       </if>
     </trim>
   </insert>
-  <select id="countByExample" parameterType="com.four.bean.EmployeeExample" resultType="java.lang.Long">
+  <select id="countByExample" parameterType="com.four.domain.EmployeeExample" resultType="java.lang.Long">
     select count(*) from tbl_emp
     <if test="_parameter != null">
       <include refid="Example_Where_Clause" />
@@ -229,7 +229,7 @@
       <include refid="Update_By_Example_Where_Clause" />
     </if>
   </update>
-  <update id="updateByPrimaryKeySelective" parameterType="com.four.bean.Employee">
+  <update id="updateByPrimaryKeySelective" parameterType="com.four.domain.Employee">
     update tbl_emp
     <set>
       <if test="empName != null">
@@ -247,7 +247,7 @@
     </set>
     where emp_id = #{empId,jdbcType=INTEGER}
   </update>
-  <update id="updateByPrimaryKey" parameterType="com.four.bean.Employee">
+  <update id="updateByPrimaryKey" parameterType="com.four.domain.Employee">
     update tbl_emp
     set emp_name = #{empName,jdbcType=VARCHAR},
       gender = #{gender,jdbcType=CHAR},

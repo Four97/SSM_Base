@@ -24,7 +24,7 @@
         </javaTypeResolver>
 
 <!--        制定javabean生成的位置-->
-        <javaModelGenerator targetPackage="com.four.bean" targetProject=".\src\main\java">
+        <javaModelGenerator targetPackage="com.four.domain" targetProject=".\src\main\java">
             <property name="enableSubPackages" value="true" />
             <property name="trimStrings" value="true" />
         </javaModelGenerator>

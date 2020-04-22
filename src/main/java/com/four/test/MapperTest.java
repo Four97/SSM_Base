@@ -1,6 +1,6 @@
 package com.four.test;
 
-import com.four.bean.Employee;
+import com.four.domain.Employee;
 import com.four.dao.DepartmentMapper;
 import com.four.dao.EmployeeMapper;
 import org.apache.ibatis.session.SqlSession;
