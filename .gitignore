@@ -1,0 +1,19 @@
+
+#数据库
+generatorConfig.xml
+
+src/main/resources/jdbcConfig.properties
+
+target/classes/jdbcConfig.properties
+target/ssm_0314_crud/WEB-INF/classes/jdbcConfig.properties
+
+
+
+# Intellij
+.idea/*
+*.iml
+*.iws
+
+# Maven
+log/*
+target/*
