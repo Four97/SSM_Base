@@ -19,4 +19,9 @@ public class EmployeeService {
     }
 
 
+    public void saveEmp(Employee employee) {
+
+        employeeMapper.insertSelective(employee);
+
+    }
 }
