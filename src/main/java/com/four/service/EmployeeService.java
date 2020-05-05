@@ -1,7 +1,8 @@
 package com.four.service;
 
-import com.four.domain.Employee;
 import com.four.dao.EmployeeMapper;
+import com.four.domain.Employee;
+import com.four.domain.EmployeeExample;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -23,5 +24,17 @@ public class EmployeeService {
 
         employeeMapper.insertSelective(employee);
 
+    }
+
+
+    public Boolean checkUser(String empName) {
+
+
+        EmployeeExample emp = new EmployeeExample();
+        EmployeeExample.Criteria criteria = emp.createCriteria();
+        criteria.andEmpNameEqualTo(empName);
+        long count = employeeMapper.countByExample(emp);
+
+        return count==0;
     }
 }
