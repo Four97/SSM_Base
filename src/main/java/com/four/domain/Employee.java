@@ -1,12 +1,17 @@
 package com.four.domain;
 
+import javax.validation.constraints.Email;
+import javax.validation.constraints.Pattern;
+
 public class Employee {
     private Integer empId;
 
+    @Pattern(regexp = "(^[a-zA-Z0-9_-]{6,16}$)|(^[\\u2E80-\\u9FFF]{2,5}$)",message = "用户名必须是6-16位数字和字母组合或2-5中文")
     private String empName;
 
     private String gender;
 
+    @Email
     private String email;
 
     private Integer dId;

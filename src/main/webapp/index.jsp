@@ -86,6 +86,64 @@
         </div>
     </div>
 </div>
+<!-- 修改员工的模态框 -->
+<div class="modal fade" id="empUpdateModal" tabindex="-1" role="dialog" aria-labelledby="myModalLabel">
+    <div class="modal-dialog" role="document">
+        <div class="modal-content">
+            <div class="modal-header">
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close"><span aria-hidden="true">&times;</span></button>
+                <h4 class="modal-title" >员工修改</h4>
+            </div>
+            <div class="modal-body">
+                <form class="form-horizontal">
+                    <div class="form-group">
+                        <label for="empName_add_input" class="col-sm-2 control-label">empName</label>
+                        <div class="col-sm-10">
+                            <p class="form-control-static" id="empName_update_static"></p>
+                            <span  class="help-block"></span>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label for="email_add_input" class="col-sm-2 control-label">email</label>
+                        <div class="col-sm-10">
+                            <input type="text" name="email" class="form-control" id="email_update_input" placeholder="email@163.com">
+                            <span  class="help-block"></span>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">gender</label>
+                        <div class="col-sm-10">
+                            <label class="radio-inline">
+                                <input type="radio" name="gender" id="gender1_update_input" value="M" checked="checked"> 男
+                            </label>
+                            <label class="radio-inline">
+                                <input type="radio" name="gender" id="gender2_update_input" value="F"> 女
+                            </label>
+                        </div>
+                    </div>
+
+                    <div class="form-group">
+                        <label class="col-sm-2 control-label">deptName</label>
+                        <div class="col-sm-4">
+                            <select class="form-control" name="dId" id="dept_update_select">
+
+                            </select>
+                        </div>
+                    </div>
+
+
+                </form>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-default" data-dismiss="modal">关闭</button>
+                <button type="button" class="btn btn-primary" id="emp_update_btn">修改</button>
+            </div>
+        </div>
+    </div>
+</div>
+
+
 <div class="container">
     <%--        标题--%>
     <div class="row">
@@ -97,7 +155,7 @@
     <div class="row" >
         <div class="col-md-4 col-md-4 col-md-offset-8">
             <button class="btn btn-primary" id="emp_add_modal_btn">新增</button>
-            <button class="btn btn-danger">删除</button>
+            <button class="btn btn-danger" id="emp_delete_all_btn">删除</button>
         </div>
     </div>
     <%--    表格--%>
@@ -105,6 +163,9 @@
         <table class="table table-hover" id = "emps_table">
             <thead>
                 <tr>
+                    <th>
+                        <input type="checkbox" id="check_all"/>
+                    </th>
                     <th>#</th>
                     <th>empName</th>
                     <th>gender</th>
@@ -129,7 +190,7 @@
     </div>
     <script type="text/javascript">
 
-        var totalRecord;
+        var totalRecord,currentPage;
         $(function(){
             to_page(1);
         });
@@ -154,21 +215,28 @@
             var emps = result.extend.pageInfo.list;
             $.each(emps,function (index,item) {
 
+
+                var checkBoxTd = $("<td><input type='checkbox' class='check_item'/></td>");
+
                 var empIdTd = $("<td></td>").append(item.empId);
                 var empNameTd = $("<td></td>").append(item.empName);
                 var genderTd = $("<td></td>").append(item.gender=='M'?"男":"女");
                 var emailTd = $("<td></td>").append(item.email);
                 var deptNameTd = $("<td></td>").append(item.department.deptName);
-                var editBtn = $("<button></button>").addClass("btn btn-primary btn-sm").append($("<span></span>").addClass("glyphicon glyphicon-pencil")).append("编辑");
-                var delBtn = $("<button></button>").addClass("btn btn-danger btn-sm").append($("<span></span>").addClass("glyphicon glyphicon-trash")).append("删除");
+                var editBtn = $("<button></button>").addClass("btn btn-primary btn-sm edit_btn").append($("<span></span>").addClass("glyphicon glyphicon-pencil")).append("编辑");
+                //添加自定义属性，表示当前id
+                editBtn.attr("edit-id",item.empId);
+                var delBtn = $("<button></button>").addClass("btn btn-danger btn-sm delete_btn").append($("<span></span>").addClass("glyphicon glyphicon-trash")).append("删除");
+                delBtn.attr("del-id",item.empId);
                 var btnTd = $("<td></td>").append(editBtn).append(" ").append(delBtn);
-                $("<tr></tr>").append(empIdTd)
+                $("<tr></tr>").append(checkBoxTd)
+                    .append(empIdTd)
                     .append(empNameTd)
                     .append(genderTd)
                     .append(emailTd)
                     .append(deptNameTd)
                     .append(btnTd)
-                    .appendTo("#emps_table tbody");;
+                    .appendTo("#emps_table tbody");
 
             })
         }
@@ -181,6 +249,7 @@
                 +result.extend.pageInfo.total+"条记录");
 
             totalRecord = result.extend.pageInfo.total;
+            currentPage = result.extend.pageInfo.pageNum;
 
 
 
@@ -253,7 +322,7 @@
             $(ele)[0].reset();
             $(ele).find("*").removeClass("has-success has-error");
             $(ele).find(".help-block").text("");
-        };
+        }
 
         //新增按钮，弹出模态框
         $("#emp_add_modal_btn").click(function () {
@@ -261,7 +330,7 @@
             //alert("sample text");
             //表单重置
             reset_form("#empAddModal form" );
-            getDepts();
+            getDepts("#dept_add_select");
 
             $("#empAddModal").modal({
                 // 点击背景不删除
@@ -270,7 +339,8 @@
         });
 
         //查出所有部门信息，显示在下拉列表
-        function getDepts() {
+        function getDepts(ele) {
+            $(ele).empty();
             $.ajax({
                 url:"${APP_PATH}/depts",
                 type:"GET",
@@ -281,7 +351,7 @@
                     $("#dept_add_select").empty();
                     $.each(result.extend.depts,function () {
                         var optionEle = $("<option></option>").append(this.deptName).attr("value",this.deptId);
-                        optionEle.appendTo("#dept_add_select");
+                        optionEle.appendTo(ele);
                     });
 
                 }
@@ -301,7 +371,7 @@
                 return false;
            }else {
                 show_validate_msg("#empName_add_input","success","");
-            };
+            }
 
            var email = $("#email_add_input").val();
            var regEmail = /^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/;
@@ -311,7 +381,7 @@
                return false;
            }else{
                show_validate_msg("#email_add_input","success","");
-           };
+           }
 
            return true;
         }
@@ -325,7 +395,7 @@
             }else if("error"==status){
                 $(ele).parent().addClass("has-error");
                 $(ele).next("span").text(msg);
-            };
+            }
         }
 
         //检验数据库是否已有该用户
@@ -355,9 +425,9 @@
         $("#emp_save_btn").click(function () {
             //将模态框中数据提交到数据库中
             //添加校验
-            if(!validate_add_form()){
-                return false;
-            }
+            // if(!validate_add_form()){
+            //     return false;
+            // }
 
             //用户名校验
             if($(this).attr("ajax-va")=="error"){
@@ -371,15 +441,166 @@
                 data:$("#empAddModal form").serialize(),
                 success:function (result) {
                     //alert(result.msg);
-                    //关闭模态框
-                    $("#empAddModal").modal('hide');
-                    //来到最后一页
-                    to_page(totalRecord);
+                    if(result.code==200){
+                        //关闭模态框
+                        $("#empAddModal").modal('hide');
+                        //来到最后一页
+                        to_page(totalRecord);
+                    }else{
+                        //console.log(result);
+                        if(undefined != result.extend.errorFields.email){
+                            show_validate_msg("#email_add_input","error",result.extend.errorFields.email);
+                        }
+                        if(undefined != result.extend.errorFields.empName){
+                            show_validate_msg("#empName_add_input","error",result.extend.errorFields.empName);
+                        }
+                    }
+
+
                 }
             });
         });
 
+        //单个删除按钮
+        $(document).on("click",".delete_btn", function () {
+            var empName = $(this).parents("tr").find("td:eq(2)").text();
+            var empId = $(this).attr("del-id");
+            if(confirm("确认删除【"+empName+"】吗？")){
+                //确认就发送删除
+                $.ajax({
+                    url:"${APP_PATH}/emp/"+empId,
+                    type:"DELETE",
+                    success:function (result) {
+                        alert(result.msg);
+                        to_page(currentPage);
 
+                    }
+
+                });
+            }
+
+        });
+
+        // 修改按钮单击事件
+
+        $(document).on("click",".edit_btn",function () {
+
+            getDepts("#dept_update_select");
+
+            getEmp($(this).attr("edit-id"));
+
+
+            //员工id传给模态框的更新按钮
+            $("#emp_update_btn").attr("edit-id",$(this).attr("edit-id"));
+
+            $("#empUpdateModal").modal({
+                // 点击背景不删除
+                backdrop:"static"
+            });
+
+        });
+
+        function getEmp(id) {
+            $.ajax({
+                url:"${APP_PATH}/emp/"+id,
+                type:"GET",
+                success:function (result) {
+                    //console.log(result);
+                    var empDate = result.extend.emp;
+                    $("#empName_update_static").text(empDate.empName);
+                    $("#email_update_input").val(empDate.email);
+                    $("#empUpdateModal input[name = gender]").val([empDate.gender]);
+                    $("#empUpdateModal select").val([empDate.dId]);
+                }
+            });
+
+        }
+
+         $("#emp_update_btn").click(function () {
+             //验证邮箱
+             var email = $("#email_update_input").val();
+             var regEmail = /^([a-z0-9_\.-]+)@([\da-z\.-]+)\.([a-z\.]{2,6})$/;
+
+             if(!regEmail.test(email)){
+                 show_validate_msg("#email_add_input","error","邮箱不正确");
+                 return false;
+             }else{
+                 show_validate_msg("#email_add_input","success","");
+             }
+
+
+             //发送更改请求
+             //若要能直接发put则要加过滤器httpPutFormContentFilter
+             // type:"POST",
+             // data:$("#empUpdateModal form").serialize()+"&_method=put",
+
+             $.ajax({
+                 url:"${APP_PATH}/emp/"+$(this).attr("edit-id"),
+                 type:"PUT",
+                 data:$("#empUpdateModal form").serialize(),
+                 success:function (result) {
+                     //alert(result.msg);
+                     $("#empUpdateModal").modal("hide");
+                     to_page(currentPage);
+                 }
+             });
+         });
+
+
+        //全选/全不选
+        $("#check_all").click(function () {
+            $(".check_item").prop("checked",$(this).prop("checked"));
+
+        });
+        $(document).on("click",".check_item",function () {
+           var flag = $(".check_item:checked").length==$(".check_item").length;
+            $("#check_all").prop("checked",flag);
+
+        });
+        <%--$("#emp_delete_all_btn").click(function(){--%>
+        <%--    var empNames = "";--%>
+        <%--    var del_idstr = "";--%>
+        <%--    $.each($(".check_item:checked"),function(){--%>
+        <%--        empNames += $(this).parents("tr").find("td:eq(2)").text() + ",";--%>
+        <%--        del_idstr += $(this).parents("tr").find("td:eq(1)").text() + "-";--%>
+        <%--    });--%>
+        <%--    empNames = empNames.substring(0,empNames.length-1);--%>
+        <%--    del_idstr = del_idstr.substring(0,del_idstr.length-1);--%>
+        <%--    if(confirm("确认删除["+empNames+"]吗?")){--%>
+        <%--        $.ajax({--%>
+        <%--            url:"${APP_PATH}/emp/" + del_idstr,--%>
+        <%--            type:"DELETE",--%>
+        <%--            success:function(result){--%>
+        <%--                alert(result.msg);--%>
+        <%--                to_page(currentPage);--%>
+        <%--            }--%>
+        <%--        });--%>
+        <%--    }--%>
+        <%--});--%>
+        $("#emp_delete_all_btn").click(function () {
+
+            var empNames="";
+            var del_idstr="";
+            $.each($(".check_item:checked"),function () {
+                empNames += $(this).parents("tr").find("td:eq(2)").text()+",";
+                del_idstr+= $(this).parents("tr").find("td:eq(1)").text()+"-";
+            });
+            empNames =  empNames.substring(0,empNames.length-1);
+            del_idstr = del_idstr.substring(0,del_idstr.length-1);
+
+            if(confirm("确认删除【"+empNames+"】吗？")){
+                $.ajax({
+                    url:"${APP_PATH}/emp/"+del_idstr,
+                    type:"DELETE",
+                    success:function (result) {
+                        alert(result.msg);
+                        to_page(currentPage);
+
+                    }
+
+                });
+            }
+        });
 
 
     </script>
